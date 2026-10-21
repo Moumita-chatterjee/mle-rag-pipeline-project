@@ -1,5 +1,6 @@
 from pathlib import Path
 from dataclasses import dataclass
+from collections import Counter
 
 @dataclass(frozen=True)
 class Chunk:
@@ -43,6 +44,13 @@ def chunk_document(path:Path) -> list[Chunk]:
         )
     return chunks
 
+def load_chunks(folder: Path) -> list[Chunk]:
+    """Load every Markdown document in the folder as paragraph chunks."""
+    chunks = []
+    for path in list_documents(folder):
+        chunks.extend(chunk_document(path))
+    return chunks
+
 
 if __name__=="__main__":
     knowledge_folder = Path("data/knowledge_base")
@@ -60,3 +68,13 @@ if __name__=="__main__":
    
     for chunk in chunk_document(paths[2]):
         print(chunk)
+
+    chunks = load_chunks(knowledge_folder)
+
+    print(f"Total chunks: {len(chunks)}")
+    counts = Counter(chunk.document_id for chunk in chunks)
+    for document_id, count in counts.items():
+        print(f"  {document_id}: {count}")
+
+    print("\nSample chunk:")
+    print(chunks[0])
