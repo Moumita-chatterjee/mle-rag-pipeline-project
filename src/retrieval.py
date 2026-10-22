@@ -1,3 +1,4 @@
+import sys
 import uuid
 from dataclasses import asdict
 from pathlib import Path
@@ -7,9 +8,16 @@ from qdrant_client.models import Distance, PointStruct, VectorParams
 from sentence_transformers import SentenceTransformer
 
 from src.embedding import chunk_to_text, embedded_texts, load_model
-from src.ingestion import Chunk, load_chunks
+from src.ingestion import Chunk
 
 COLLECTION_NAME = "northstar_kb"
+INDEX_PATH = Path("storage/qdrant")
+
+def open_client(path: Path | None = INDEX_PATH) -> QdrantClient:
+    """Open Qdrant stored on disk at path, or in memory when path is None."""
+    if path is None:
+        return QdrantClient(":memory:")
+    return QdrantClient(path=str(path))
 
 
 def build_index(
@@ -50,13 +58,14 @@ def search(
 
 
 if __name__ == "__main__":
-    client = QdrantClient(":memory:")
-    model = load_model()
-    chunks = load_chunks(Path("data/knowledge_base"))
-    build_index(client, model, chunks)
-    print("Points in collection:", client.count(COLLECTION_NAME).count)
-
-    question = "How do I get a refund for a duplicate payment?"
-    print(f"\nQuestion: {question}")
-    for score, chunk in search(client, model, question):
-        print(f"  {score:.3f}  {chunk.chunk_id}")
+    question = " ".join(sys.argv[1:]) or "How do I get a refund for a duplicate payment?"
+    client = open_client()
+    try:
+        if not client.collection_exists(COLLECTION_NAME):
+            print("No index found. Build it first: uv run python -m src.build_index")
+        else:
+            print(f"Question: {question}")
+            for score, chunk in search(client, load_model(), question):
+                print(f"  {score:.3f}  {chunk.chunk_id}")
+    finally:
+        client.close()
