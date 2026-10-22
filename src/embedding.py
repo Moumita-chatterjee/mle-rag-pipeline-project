@@ -9,7 +9,7 @@ def load_model(model_name: str = MODEL_NAME ) -> SentenceTransformer:
     return SentenceTransformer(model_name, device = "cpu")
 
 def chunk_to_text(chunk: Chunk) -> str:
-    return f"{chunk.title}.{chunk.text}"
+    return f"{chunk.title}. {chunk.text}"
 
 def embedded_texts(model: SentenceTransformer, texts: list[str]) -> np.ndarray:
     return model.encode(texts, normalize_embeddings = True)

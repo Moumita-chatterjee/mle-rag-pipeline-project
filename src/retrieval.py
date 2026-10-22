@@ -11,11 +11,6 @@ from src.ingestion import Chunk, load_chunks
 
 COLLECTION_NAME = "northstar_kb"
 
-def build_index(
-    client: QdrantClient, model: SentenceTransformer, chunks: list[Chunk]
-) -> None:
-    """Embed every chunk and (re)create the Qdrant collection from scratch."""
-    vectors = embedded_texts(model, [chunk_to_text(chunk) for chunk in chunks])
 
 def build_index(
     client: QdrantClient, model: SentenceTransformer, chunks: list[Chunk]
