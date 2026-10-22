@@ -1,5 +1,6 @@
 import sys
 import uuid
+from dataclasses import dataclass
 from dataclasses import asdict
 from pathlib import Path
 
@@ -12,6 +13,9 @@ from src.ingestion import Chunk
 
 COLLECTION_NAME = "northstar_kb"
 INDEX_PATH = Path("storage/qdrant")
+
+TOP_K = 3
+MIN_SCORE = 0.46  # chosen from calibration.json, see report
 
 def open_client(path: Path | None = INDEX_PATH) -> QdrantClient:
     """Open Qdrant stored on disk at path, or in memory when path is None."""
@@ -56,6 +60,28 @@ def search(
     )
     return [(point.score, Chunk(**point.payload)) for point in response.points]
 
+
+@dataclass(frozen=True)
+class RetrievalResult:
+    abstain: bool
+    top_score: float
+    evidence: list[tuple[float, Chunk]]
+
+def retrieve(
+    client: QdrantClient,
+    model: SentenceTransformer,
+    question: str,
+    top_k: int = TOP_K,
+    min_score: float = MIN_SCORE,
+) -> RetrievalResult:
+    """Search, then abstain when the best match is below min_score."""
+    results = search(client, model, question, top_k)
+    top_score = results[0][0] if results else 0.0
+    return RetrievalResult(
+        abstain=top_score < min_score,
+        top_score=top_score,
+        evidence=results,
+    )
 
 if __name__ == "__main__":
     question = " ".join(sys.argv[1:]) or "How do I get a refund for a duplicate payment?"
