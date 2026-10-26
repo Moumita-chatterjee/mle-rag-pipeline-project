@@ -1,147 +1,176 @@
-# RAG Pipeline Project
+# Northstar Support RAG Assistant
 
-Use this repository as a **template** for your RAG pipeline project. You will build an assistant for the fictional Northstar learning platform support team: search the supplied operational knowledge base, produce cited answers only when evidence supports them, and document where retrieval or generation still fails. Create pull requests in your own copy even if you are working alone, and use them to track your progress.
+A local retrieval-augmented assistant for the fictional Northstar learning
+platform. It answers support questions from ten approved articles, cites its
+sources as `[document-id]`, abstains when the evidence is too weak, and removes
+retrieved text that contains injected instructions.
 
-This assignment follows the earlier lessons on retrieval-augmented generation (RAG), vector similarity search, and retrieval evaluation. Unlike the lesson repository, this project asks you to make and justify system decisions in a complete application.
+The task is described in [project-description.md](project-description.md). The
+results and analysis are in
+[reports/evaluation_report.md](reports/evaluation_report.md).
 
-## Learning Objectives
-
-By the end of this repository, you should be able to:
-
-- Build an end-to-end RAG system that retrieves relevant context and generates accurate, cited answers.
-- Evaluate retrieval with `recall@k` and generation quality with answer relevance and faithfulness checks.
-- Produce an evaluation report documenting retrieval failures, threshold decisions, and evidence-based improvement recommendations.
-
-## Learning Path
+## How It Works
 
 ```mermaid
 flowchart LR
-    A["Knowledge<br>base"] --> B["Chunk and<br>preserve metadata"]
-    B --> C["Embed and<br>index"]
-    D["Support question"] --> E["Retrieve<br>evidence"]
-    C --> E
-    E --> F["Apply evidence<br>threshold"]
-    F --> G["Generate<br>cited answer"]
-    G --> H["Validate citations<br>and safety"]
-    H --> I["Evaluation<br>report"]
+    A["Knowledge<br>base"] --> B["Paragraph<br>chunks"]
+    B --> C["MiniLM<br>embeddings"]
+    C --> D["Qdrant<br>index"]
+    Q["Support question"] --> E["Top-3<br>retrieval"]
+    D --> E
+    E --> F{"Best score<br>≥ 0.46?"}
+    F -- no --> X["Abstain"]
+    F -- yes --> G["Remove injected<br>instructions"]
+    G --> H["Generate cited<br>answer"]
+    H --> I{"Citations in<br>evidence?"}
+    I -- no --> X
+    I -- yes --> J["Answer"]
 ```
 
-| File / Folder | Description |
-|---|---|
-| [**Project Description**](project-description.md) | The assignment tasks, suggested workflow, repository layout, and acceptance checklist. |
-
-### Additional Folders and Files
-
-| File / Folder | Description |
-|---|---|
-| [**data/knowledge_base/**](data/knowledge_base/) | Source documents that your pipeline must index. |
-| [**data/evaluation/**](data/evaluation/) | Separate calibration and final evaluation questions. |
-| [**solution/**](solution/README.md) | A separate, runnable reference implementation. |
-| [**.env.example**](.env.example) | Default configuration and optional provider API key placeholders. |
-| [**pyproject.toml**](pyproject.toml) | Project configuration and dependencies. |
-| [**uv.lock**](uv.lock) | Dependency lock file. |
+| Step | Module | What it does |
+|---|---|---|
+| Ingestion | `src/ingestion.py` | Splits each Markdown file into paragraph chunks with `chunk_id`, `document_id`, `title`, `chunk_index` |
+| Embeddings | `src/embedding.py` | Embeds `"<title>. <paragraph>"` with `sentence-transformers/all-MiniLM-L6-v2` (384 dimensions, normalised) |
+| Index and retrieval | `src/retrieval.py` | Qdrant local collection `northstar_kb` (cosine), top-k = 3, abstain below 0.46 |
+| Rebuild | `src/build_index.py` | Recreates the index in `storage/qdrant/` from the sources |
+| Safety | `src/safety.py` | Flags and removes chunks containing injected instructions |
+| Generation | `src/generation.py` | Extractive answer (default, no key) or Groq/Mistral LLM answer; rejects citations not in the evidence |
+| Pipeline | `src/pipeline.py` | Connects all steps in `answer_question()` |
+| Evaluation | `src/evaluation.py` | Runs a question set, computes the metrics, saves results to `reports/` |
 
 ## Setup
 
-> [!NOTE]
-> Throughout these steps, text in angle brackets like `<repo-name>` is a **placeholder**. Replace it, including the `< >` brackets, with your own value. For example, `cd <repo-name>` becomes `cd mle-rag-pipeline-project`.
-
-### 1. Create the Repository from the Template
-
-Click **Use this template** on GitHub.
-
-When creating the repository:
-
-- Set yourself as the **Owner**
-- Choose a repository name
-- Disable **Include all branches**
-- Click **Create repository**
-
-> [!IMPORTANT]
-> If you are working in pairs or groups, only **one person** should complete this step.
-
----
-
-### 2. Add Collaborators (Pairs/Groups Only)
-
-If working with teammates:
-
-1. Open the repository on GitHub
-2. Go to **Settings → Collaborators**
-3. Add your teammates as collaborators
-4. Share the repository link with your team
-
-Teammates should accept the invitation before continuing.
-
----
-
-### 3. Clone the Repository
-
-Copy the SSH URL from the **Code** button on GitHub, then run:
+Requires Python 3.13 and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-git clone <copied-ssh-url>
-```
-
-The copied SSH URL will look like `git@github.com:<your-username>/<repo-name>.git`.
-
----
-
-### 4. Move into the Project Folder and Install Dependencies
-
-This project uses Python 3.13. The command below installs all dependencies and creates a virtual environment in `.venv/`.
-
-```bash
-cd <repo-name>
 uv sync
-```
-
-The project and `solution/` share this environment. Do not create another environment inside `solution/`.
-
----
-
-### 5. Create the Environment File
-
-Copy the template once:
-
-```bash
 cp .env.example .env
 ```
 
-Leave provider API keys empty to use the deterministic extractive baseline. For optional live generation, add a [Groq](https://console.groq.com/docs/openai) API key, or set `LLM_PROVIDER=mistral` and add a [Mistral](https://docs.mistral.ai/capabilities/completion/) API key. Provider calls may incur usage costs.
+On Windows PowerShell use `Copy-Item .env.example .env` instead of `cp`.
 
-> [!CAUTION]
-> Never commit `.env`. It is git-ignored because environment files often hold secrets. Only `.env.example`, with placeholder or default values, belongs in the repository.
+The first run downloads the MiniLM model (about 90 MB) to the Hugging Face
+cache; later runs reuse it. Qdrant runs in local mode, so no Docker or account
+is needed.
 
----
+### Optional LLM generation
 
-### 6. Open the Repository in VS Code
+Without an API key the pipeline uses the deterministic extractive generator.
+To use an LLM, set these in `.env`:
 
-> [!NOTE]
-> Make sure you open VS Code from the project root so it automatically detects the environment created by `uv sync`.
+| Variable | Example |
+|---|---|
+| `LLM_PROVIDER` | `groq` or `mistral` |
+| `GROQ_API_KEY` / `MISTRAL_API_KEY` | your key |
+| `GROQ_MODEL` / `MISTRAL_MODEL` | `openai/gpt-oss-20b` |
 
-Launch VS Code in the project root folder:
+Never commit `.env`; it is git-ignored. Provider calls may incur costs and send
+the question and evidence to the provider.
+
+Retrieval settings (`TOP_K`, `MIN_SCORE`, `INDEX_PATH`) and the embedding model
+are set in `src/retrieval.py` and `src/embedding.py`; the retrieval entries in
+`.env.example` belong to the reference solution and are not read by this code.
+
+## Usage
+
+Run every command from the project root.
+
+**1. Build the index**
 
 ```bash
-code .
+uv run python -m src.build_index
 ```
 
-If you create a notebook to explore the data, select the Python environment created by `uv sync` as the kernel.
+Prints the model, the collection and the chunk count per document (22 chunks).
+Re-run it whenever a source document changes.
 
-## Reference Solution
+**2. Ask a question**
 
-This repository includes a complete local reference implementation in [solution/](solution/).
-Use it to compare implementation choices and expected outputs. It is one way to solve the project, not the required structure for yours.
+```bash
+uv run python -m src.pipeline "How long is a password reset link valid?"
+```
 
-See [solution/README.md](solution/README.md) for how to run it and how its files fit together.
+Prints the generation mode, best score, retrieved and flagged chunks, citation
+problems and the answer.
 
-The reference uses Sentence Transformers and Qdrant local mode. The first semantic run downloads MiniLM; later runs can reuse its Hugging Face cache. The model revision is pinned and runs on CPU. Qdrant local mode needs neither Docker nor an account.
+More examples:
 
-## References & Further Reading
+```bash
+# unsupported: abstains
+uv run python -m src.pipeline "Is there a discounted subscription rate for students?"
 
-- [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401) - Lewis et al., 2020
-- [Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks](https://arxiv.org/abs/1908.10084) - Reimers and Gurevych, 2019
+# prompt injection: retrieved-content-safety:1 is flagged and removed
+uv run python -m src.pipeline "What is the example of malicious content used for security testing?"
+```
+
+To see only the retrieved chunks and scores:
+
+```bash
+uv run python -m src.retrieval "How long is a password reset link valid?"
+```
+
+**3. Run the evaluation**
+
+```bash
+uv run python -m src.evaluation                   # calibration set
+uv run python -m src.evaluation questions         # final set, extractive
+uv run python -m src.evaluation questions --llm   # final set, LLM (needs a key)
+```
+
+Each run prints a per-question table and the summary, and saves
+`reports/results_<set>_<mode>.json`.
+
+**4. Run the tests**
+
+```bash
+uv run pytest tests
+```
+
+Pass `tests` explicitly so pytest does not also collect `solution/tests`. The
+retrieval tests load the model and take about a minute; for the fast tests only:
+
+```bash
+uv run pytest tests/test_ingestion.py tests/test_safety_and_citations.py
+```
+
+## Results
+
+Final set (`data/evaluation/questions.json`, 16 questions), threshold 0.46
+chosen on the calibration set and frozen before the run:
+
+| Metric | Extractive | LLM (Groq) |
+|---|---|---|
+| recall@3 | 1.00 | 1.00 |
+| MRR | 0.96 | 0.96 |
+| Answer relevance | 0.87 | 0.73 |
+| Faithfulness | 1.00 | not rated |
+| Decision accuracy | 0.94 | 0.88 |
+
+See the [evaluation report](reports/evaluation_report.md) for metric rubrics,
+the per-question table, failure analysis and recommendations.
+
+## Repository Layout
+
+```text
+├── data/
+│   ├── knowledge_base/     # approved source articles
+│   └── evaluation/         # calibration.json, questions.json
+├── reports/
+│   ├── evaluation_report.md
+│   └── results_*.json      # saved evaluation runs
+├── src/                    # the RAG pipeline
+├── tests/                  # pytest suite
+├── solution/               # separate reference implementation from the course
+├── storage/                # generated Qdrant index (git-ignored)
+├── .env.example
+├── pyproject.toml
+└── uv.lock
+```
+
+## References
+
+- [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401), Lewis et al., 2020
+- [Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks](https://arxiv.org/abs/1908.10084), Reimers and Gurevych, 2019
 - [OWASP LLM Prompt Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html)
-- [Sentence Transformers Semantic Search](https://www.sbert.net/examples/sentence_transformer/applications/semantic-search/README.html)
 - [Qdrant Local Quickstart](https://qdrant.tech/documentation/quickstart/)
-- [Ragas metrics](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/) and [TruLens RAG triad](https://www.trulens.org/getting_started/core_concepts/rag_triad/) for extending evaluation beyond the supplied baseline.
+- [Ragas metrics](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/)
