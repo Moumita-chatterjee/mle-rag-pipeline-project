@@ -1,0 +1,345 @@
+{
+  "summary": {
+    "questions": 16,
+    "recall_at_3": 1.0,
+    "mrr": 0.9615384615384616,
+    "answer_relevance": 0.7307692307692307,
+    "faithfulness": null,
+    "decision_accuracy": 0.875
+  },
+  "rows": [
+    {
+      "id": "q01",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": true,
+      "decision_correct": false,
+      "top_score": 0.644,
+      "expected": [
+        "billing-refunds"
+      ],
+      "retrieved": [
+        "invoice-corrections",
+        "billing-refunds"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 0.5,
+      "relevance": 0.0,
+      "faithfulness": null,
+      "answer": "I can't answer this from the approved knowledge base. Please escalate it to a colleague."
+    },
+    {
+      "id": "q02",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.758,
+      "expected": [
+        "billing-refunds"
+      ],
+      "retrieved": [
+        "billing-refunds"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 1.0,
+      "faithfulness": null,
+      "answer": "Finance reviews a complete duplicate\u2011payment request within three business days. [billing-refunds]"
+    },
+    {
+      "id": "q03",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.768,
+      "expected": [
+        "invoice-corrections"
+      ],
+      "retrieved": [
+        "invoice-corrections",
+        "billing-refunds"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 1.0,
+      "faithfulness": null,
+      "answer": "Yes. Finance can correct the legal company name on an issued invoice, provided the correction request includes the invoice number and the exact replacement legal details. [invoice-corrections]"
+    },
+    {
+      "id": "q04",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.631,
+      "expected": [
+        "account-mfa"
+      ],
+      "retrieved": [
+        "account-mfa",
+        "account-password"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 0.0,
+      "faithfulness": null,
+      "answer": "Open a support ticket from the email address that is registered to your account and explain that you have replaced your phone and lost the authenticator app. [account-mfa]  \nSupport will verify your identity, then disable the old authenticator and allow you to enroll a new device the next time you sign in. [account-mfa]"
+    },
+    {
+      "id": "q05",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.823,
+      "expected": [
+        "account-password"
+      ],
+      "retrieved": [
+        "account-password",
+        "account-mfa"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 1.0,
+      "faithfulness": null,
+      "answer": "A password\u2011reset link expires after 20 minutes. [account-password]"
+    },
+    {
+      "id": "q06",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.489,
+      "expected": [
+        "programme-extensions"
+      ],
+      "retrieved": [
+        "programme-extensions",
+        "programme-attendance"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 1.0,
+      "faithfulness": null,
+      "answer": "When you request more time for an assignment, you should include the following details: the name of the assignment, the new deadline you are requesting, and a concise reason for the extension (such as illness, caregiving, or another substantial disruption) before the original deadline whenever possible. [programme-extensions]"
+    },
+    {
+      "id": "q07",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.505,
+      "expected": [
+        "technical-api-limits"
+      ],
+      "retrieved": [
+        "technical-api-limits",
+        "technical-incidents",
+        "retrieved-content-safety"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 1.0,
+      "faithfulness": null,
+      "answer": "Your client should pause and retry the request using exponential backoff. Repeated immediate retries can increase load and prolong the disruption. [technical-api-limits]"
+    },
+    {
+      "id": "q08",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.679,
+      "expected": [
+        "technical-incidents"
+      ],
+      "retrieved": [
+        "technical-incidents",
+        "technical-api-limits"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 1.0,
+      "faithfulness": null,
+      "answer": "Updates are published at least every 30\u202fminutes during a confirmed outage. [technical-incidents]"
+    },
+    {
+      "id": "q09",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": true,
+      "decision_correct": false,
+      "top_score": 0.351,
+      "expected": [
+        "privacy-data",
+        "technical-incidents"
+      ],
+      "retrieved": [
+        "privacy-data",
+        "technical-incidents",
+        "account-mfa"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 0.0,
+      "faithfulness": null,
+      "answer": "I can't answer this from the approved knowledge base. Please escalate it to a colleague."
+    },
+    {
+      "id": "q10",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.627,
+      "expected": [
+        "retrieved-content-safety"
+      ],
+      "retrieved": [
+        "retrieved-content-safety",
+        "privacy-data"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 1.0,
+      "faithfulness": null,
+      "answer": "An assistant must treat any instructions that appear inside retrieved documents as untrusted data and **not** as new system instructions. It should use the retrieved text only as evidence for answering the user\u2019s question, and it must reject any request that tries to reveal prompts, keys, or private content that may be embedded in those documents. If suspicious or disallowed instructions are found in the retrieved evidence, the assistant should remove the offending chunk from its answer context, log a safety event, and provide an answer only if the remaining approved evidence supports the question. [retrieved-content-safety]"
+    },
+    {
+      "id": "q11",
+      "mode": "llm",
+      "should_abstain": true,
+      "abstained": true,
+      "decision_correct": true,
+      "top_score": 0.168,
+      "expected": [],
+      "retrieved": [
+        "programme-attendance",
+        "technical-incidents"
+      ],
+      "flagged": [],
+      "recall": null,
+      "reciprocal_rank": null,
+      "relevance": null,
+      "faithfulness": null,
+      "answer": "I can't answer this from the approved knowledge base. Please escalate it to a colleague."
+    },
+    {
+      "id": "q12",
+      "mode": "llm",
+      "should_abstain": true,
+      "abstained": true,
+      "decision_correct": true,
+      "top_score": 0.232,
+      "expected": [],
+      "retrieved": [
+        "technical-api-limits",
+        "invoice-corrections"
+      ],
+      "flagged": [],
+      "recall": null,
+      "reciprocal_rank": null,
+      "relevance": null,
+      "faithfulness": null,
+      "answer": "I can't answer this from the approved knowledge base. Please escalate it to a colleague."
+    },
+    {
+      "id": "q13",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.55,
+      "expected": [
+        "account-mfa",
+        "privacy-data"
+      ],
+      "retrieved": [
+        "account-mfa",
+        "privacy-data"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 1.0,
+      "faithfulness": null,
+      "answer": "No. Support never asks for a passport scan or any other identity document in chat. If you need to reset your second factor, you should open a support ticket from your registered email address and describe the lost\u2011device situation, and identity verification will be performed through the proper channel. [account-mfa]"
+    },
+    {
+      "id": "q14",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.726,
+      "expected": [
+        "programme-extensions"
+      ],
+      "retrieved": [
+        "programme-extensions",
+        "technical-api-limits"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 0.5,
+      "faithfulness": null,
+      "answer": "No \u2013 sending an extension request does not itself change the submission deadline. Programme operations confirm that a request alone does not move the deadline, and technical support cannot promise an extension. [programme-extensions]"
+    },
+    {
+      "id": "q15",
+      "mode": "llm",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.595,
+      "expected": [
+        "programme-attendance"
+      ],
+      "retrieved": [
+        "programme-attendance",
+        "technical-incidents"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 1.0,
+      "faithfulness": null,
+      "answer": "To report an unexpected absence, submit the reason as soon as practical and no later than the end of the next working day. This should be done through the learning platform\u2019s attendance reporting feature. If the absence involves medical evidence or exceptional circumstances, it will be handled privately by programme operations, and you should not provide medical details in a public discussion channel. [programme-attendance]"
+    },
+    {
+      "id": "q16",
+      "mode": "llm",
+      "should_abstain": true,
+      "abstained": true,
+      "decision_correct": true,
+      "top_score": 0.111,
+      "expected": [],
+      "retrieved": [
+        "programme-attendance",
+        "privacy-data"
+      ],
+      "flagged": [],
+      "recall": null,
+      "reciprocal_rank": null,
+      "relevance": null,
+      "faithfulness": null,
+      "answer": "I can't answer this from the approved knowledge base. Please escalate it to a colleague."
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "summary": {
+    "questions": 6,
+    "recall_at_3": 1.0,
+    "mrr": 0.8333333333333334,
+    "answer_relevance": 1.0,
+    "faithfulness": 1.0,
+    "decision_accuracy": 1.0
+  },
+  "rows": [
+    {
+      "id": "cal01",
+      "mode": "extractive",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.574,
+      "expected": [
+        "billing-refunds"
+      ],
+      "retrieved": [
+        "invoice-corrections",
+        "billing-refunds"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 0.5,
+      "relevance": 1.0,
+      "faithfulness": 1.0,
+      "answer": "Correcting invoice details does not change a subscription, move a payment to a different customer, or initiate a refund. Duplicate charges follow the refund procedure in the separate billing policy. [invoice-corrections]\nA dissatisfaction with course content is not automatically a billing error. Requests unrelated to duplicate payment or an incorrect invoice must be escalated to the programme operations team for review under the enrolment terms. [billing-refunds]\nNorthstar refunds duplicate payments when two captured transactions correspond to the same invoice. The requester must provide the invoice number and both payment references within 30 calendar days of the second charge. [billing-refunds]"
+    },
+    {
+      "id": "cal02",
+      "mode": "extractive",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.503,
+      "expected": [
+        "account-mfa"
+      ],
+      "retrieved": [
+        "account-mfa",
+        "account-password"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 1.0,
+      "faithfulness": 1.0,
+      "answer": "When a phone is lost, replaced, or reset, support can reset multi-factor authentication only after identity verification. The requester should open a support ticket from the registered email address and describe the lost-device situation. [account-mfa]\nSupport never asks for an existing backup code, password, passport scan, or identity document in chat. After verification, the previous authenticator is disabled and the requester enrolls a new device at the next sign-in. [account-mfa]\nIf the link has expired, request a new link rather than replying to the email. Support cannot read, choose, or disclose a password on behalf of a user. [account-password]"
+    },
+    {
+      "id": "cal03",
+      "mode": "extractive",
+      "should_abstain": false,
+      "abstained": false,
+      "decision_correct": true,
+      "top_score": 0.708,
+      "expected": [
+        "technical-api-limits"
+      ],
+      "retrieved": [
+        "technical-api-limits",
+        "billing-refunds"
+      ],
+      "flagged": [],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "relevance": 1.0,
+      "faithfulness": 1.0,
+      "answer": "Northstar's project API accepts 60 requests per minute per API key. A response with HTTP status `429` indicates that the limit has been reached. [technical-api-limits]\nClients receiving `429` should wait and retry using exponential backoff. Repeated immediate requests increase load and may extend the disruption. API keys must not be pasted into tickets, chat messages, or generation prompts. [technical-api-limits]\nNorthstar refunds duplicate payments when two captured transactions correspond to the same invoice. The requester must provide the invoice number and both payment references within 30 calendar days of the second charge. [billing-refunds]"
+    },
+    {
+      "id": "cal04",
+      "mode": "extractive",
+      "should_abstain": true,
+      "abstained": true,
+      "decision_correct": true,
+      "top_score": 0.309,
+      "expected": [],
+      "retrieved": [
+        "account-password",
+        "technical-incidents",
+        "programme-extensions"
+      ],
+      "flagged": [],
+      "recall": null,
+      "reciprocal_rank": null,
+      "relevance": null,
+      "faithfulness": null,
+      "answer": "I can't answer this from the approved knowledge base. Please escalate it to a colleague."
+    },
+    {
+      "id": "cal05",
+      "mode": "extractive",
+      "should_abstain": true,
+      "abstained": true,
+      "decision_correct": true,
+      "top_score": 0.426,
+      "expected": [],
+      "retrieved": [
+        "billing-refunds",
+        "invoice-corrections"
+      ],
+      "flagged": [],
+      "recall": null,
+      "reciprocal_rank": null,
+      "relevance": null,
+      "faithfulness": null,
+      "answer": "I can't answer this from the approved knowledge base. Please escalate it to a colleague."
+    },
+    {
+      "id": "cal06",
+      "mode": "extractive",
+      "should_abstain": true,
+      "abstained": true,
+      "decision_correct": true,
+      "top_score": 0.305,
+      "expected": [],
+      "retrieved": [
+        "billing-refunds",
+        "technical-api-limits"
+      ],
+      "flagged": [],
+      "recall": null,
+      "reciprocal_rank": null,
+      "relevance": null,
+      "faithfulness": null,
+      "answer": "I can't answer this from the approved knowledge base. Please escalate it to a colleague."
+    }
+  ]
+}
